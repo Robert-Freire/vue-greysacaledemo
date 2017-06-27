@@ -133,12 +133,10 @@ Vue.component('app-greyscale-img', {
      },
         mounted:function (){
             var vm = this;
-          
-            $('.grayscale img').each(function(){
-                var el = this;
 
+                var el =  $(this)[0].$el;
+  
                 function loaded() {
-                    debugger;
                     vm.grayDecorate(el);
                 }
 
@@ -147,10 +145,7 @@ Vue.component('app-greyscale-img', {
                     loaded()
                 } else {
                     el.addEventListener('load', loaded)
-                    el.addEventListener('error', function() {})
                 }
-            })
-
         },
   
     });
