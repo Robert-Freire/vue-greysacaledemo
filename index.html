@@ -37,11 +37,8 @@
   <script>
 
 Vue.component('app-greyscale-img', {
-  template: '<img>',
-//   data: {
-// //    message: 'hello'
-//   },
-     methods:{
+    template: '<img>',
+    methods:{
         grayDecorate: function (item) {
             var item = $(item)[0];
             /**
@@ -134,19 +131,19 @@ Vue.component('app-greyscale-img', {
         mounted:function (){
             var vm = this;
 
-                var el =  $(this)[0].$el;
-  
-                function loaded() {
-                    vm.grayDecorate(el);
-                }
+            var el =  $(this)[0].$el;
 
-                if (el.complete) {
-                    
-                    loaded()
-                } else {
-                    el.addEventListener('load', loaded)
-                }
-        },
+            function loaded() {
+                vm.grayDecorate(el);
+            }
+
+            if (el.complete) {
+                
+                loaded()
+            } else {
+                el.addEventListener('load', loaded)
+            }
+    },
   
     });
 
