@@ -1,178 +1,236 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <title>Welcome to Vue</title>
-  <script src="https://unpkg.com/vue" ></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-  
+    <title>Welcome to Vue</title>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <link rel="stylesheet" href="./imgGray.css">
+
 </head>
+
 <body>
-  <div id="app" class="grayscale">
-    <app-greyscale-img :src="imgURL" alt="Vue logo">  </app-greyscale-img>
-    <app-greyscale-img :src="imgURL2" alt="Vue logo">  </app-greyscale-img>
-    <h1>{{ greeting }} - {{ imgURL2}}</h1>
-    <ul>
-      <li>
-        To learn more about Vue, visit
-        <a :href="docsURL" target="_blank">
+    <div id="app" class="grayscale">
+        <app-greyscale-img :src="imgURL" alt="Vue logo"> </app-greyscale-img>
+        <app-greyscale-img :src="imgURL2" alt="Vue logo"> </app-greyscale-img>
+        <h1>{{ greeting }} - {{ imgURL2}}</h1>
+        <ul>
+            <li>
+                To learn more about Vue, visit
+                <a :href="docsURL" target="_blank">
           {{ humanizeURL(docsURL) }}
         </a>
-      </li>
-      <li>
-        For live help with simple questions, check out
-        <a :href="gitterURL" target="_blank">
+            </li>
+            <li>
+                For live help with simple questions, check out
+                <a :href="gitterURL" target="_blank">
           the Gitter chat
         </a>
-      </li>
-      <li>
-        For more complex questions, post to
-        <a :href="forumURL" target="_blank">
+            </li>
+            <li>
+                For more complex questions, post to
+                <a :href="forumURL" target="_blank">
           the forum
         </a>
-      </li>
-    </ul>
-  </div>
+            </li>
+        </ul>
+    </div>
 
-  <script>
+    <script>
+        Vue.component('app-greyscale-img', {
+            template: '<img class="grayscale">',
+            methods: {
+                grayDecorate: function (item) {
+                    var item = $(item)[0];
+                    /**
+                    Script tests browser features and tells if the Browser is IE10 or IE11
+                    Target IE 10 with JavaScript and CSS property detection.
+                    # 2013 by Tim Pietrusky
+                    # timpietrusky.com
+                    **/
 
-Vue.component('app-greyscale-img', {
-    template: '<img>',
-    methods:{
-        grayDecorate: function (item) {
-            var item = $(item)[0];
-            /**
-            Script tests browser features and tells if the Browser is IE10 or IE11
-            Target IE 10 with JavaScript and CSS property detection.
-            # 2013 by Tim Pietrusky
-            # timpietrusky.com
-            **/
-                                    
-            // IE 10 only CSS properties
-            var ie10Styles = [
-            'msTouchAction',
-            'msWrapFlow'];
+                    // IE 10 only CSS properties
+                    var ie10Styles = [
+                        'msTouchAction',
+                        'msWrapFlow'
+                    ];
 
-            var ie11Styles = [
-            'msTextCombineHorizontal'];
+                    var ie11Styles = [
+                        'msTextCombineHorizontal'
+                    ];
 
-            /*
-            * Test all IE only CSS properties
-            */
+                    /*
+                     * Test all IE only CSS properties
+                     */
 
-            var d = document;
-            var b = d.body;
-            var s = b.style;
-            var brwoser = null;
-            var property;
+                    var d = document;
+                    var b = d.body;
+                    var s = b.style;
+                    var brwoser = null;
+                    var property;
 
-            // Tests IE10 properties
-            for (var i = 0; i < ie10Styles.length; i++) {
-                property = ie10Styles[i];
-                if (s[property] != undefined) {
-                                brwoser = "ie10";
-                }
-            }
-
-            // Tests IE11 properties
-            for (var i = 0; i < ie11Styles.length; i++) {
-                property = ie11Styles[i];
-                if (s[property] != undefined) {
-                                brwoser = "ie11";
-                }
-            }
-                                                    
-            //Grayscale images only on browsers IE10+ since they removed support for CSS grayscale filter
-            if(brwoser == "ie10" || brwoser == "ie11" ){
-            
-                //If the browser supports Filters, then we assume that it is Microsoft Edge
-                if (Modernizr.cssfilters){
-                    $('body').addClass('edge'); // Adds Microsoft Edge class to the body
-                } else {
-                    $('body').addClass('ie11'); // Fixes marbin issue on IE10 and IE11 after canvas function on images
-                        if (item.src){
-                            item.src = grayscaleIe(item.src);
+                    // Tests IE10 properties
+                    for (var i = 0; i < ie10Styles.length; i++) {
+                        property = ie10Styles[i];
+                        if (s[property] != undefined) {
+                            brwoser = "ie10";
                         }
-                    
-                    // Custom grayscale function for IE10 and IE11
-                    function grayscaleIe(src){
-                        var canvas = document.createElement('canvas');
-                        var ctx = canvas.getContext('2d');
-                        var imgObj = new Image();
-                        imgObj.src = src;
-                        canvas.width = imgObj.width;
-                        canvas.height = imgObj.height; 
-                        ctx.drawImage(imgObj, 0, 0); 
-                        var imgPixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                        for(var y = 0; y < imgPixels.height; y++){
-                                    for(var x = 0; x < imgPixels.width; x++){
-                                                    var i = (y * 4) * imgPixels.width + x * 4;
-                                                    var avg = (imgPixels.data[i] + imgPixels.data[i + 1] + imgPixels.data[i + 2]) / 3;
-                                                    imgPixels.data[i] = avg; 
-                                                    imgPixels.data[i + 1] = avg; 
-                                                    imgPixels.data[i + 2] = avg;
+                    }
+
+                    // Tests IE11 properties
+                    for (var i = 0; i < ie11Styles.length; i++) {
+                        property = ie11Styles[i];
+                        if (s[property] != undefined) {
+                            brwoser = "ie11";
+                        }
+                    }
+
+                    //Grayscale images only on browsers IE10+ since they removed support for CSS grayscale filter
+                    if (brwoser == "ie10" || brwoser == "ie11") {
+
+                        var detectIE = function () {
+                            var ua = window.navigator.userAgent;
+                            var msie = ua.indexOf('MSIE ');
+                            if (msie > 0) {
+                                // IE 10 or older => return version number
+                                return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+                            }
+
+                            var trident = ua.indexOf('Trident/');
+                            if (trident > 0) {
+                                // IE 11 => return version number
+                                var rv = ua.indexOf('rv:');
+                                return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+                            }
+
+                            var edge = ua.indexOf('Edge/');
+                            if (edge > 0) {
+                                // Edge (IE 12+) => return version number
+                                return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+                            }
+
+                            // other browser
+                            return false;
+                        }
+                        //If the browser supports Filters, then we assume that it is Microsoft Edge
+                        if (detectIE() >= 12) {
+                            $('body').addClass('edge'); // Adds Microsoft Edge class to the body
+                        } else {
+                            $('body').addClass('ie11'); // Fixes marbin issue on IE10 and IE11 after canvas function on images
+                            if (item.src) {
+                                var el = $(item);
+                                el.css({
+                                        "position": "absolute"
+                                    }).wrap("<div class='img_wrapper' style='display: inline-block'>").clone()
+                                    .addClass('img_grayscale ieImage').css({
+                                        "position": "absolute",
+                                        "z-index": "5",
+                                        "opacity": "0"
+                                    }).insertBefore(el).queue(function () {
+                                        var el = $(this);
+                                        el.parent().css({
+                                            "width": this.width,
+                                            "height": this.height
+                                        });
+                                        el.dequeue();
+                                    });
+                                item.src = grayscaleIe(item.src);
+                                $(item).parent().hover(
+                                    function () {
+                                        el.parent().find('img:first').stop().animate({opacity:1}, 200)
+                                    }, 
+                                    function () {
+                                        el.parent().find('img:first').stop().animate({opacity:0}, 200)
                                     }
-                        }
-                        ctx.putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
-                        return canvas.toDataURL();
-                    };
-                };
-                                        
-                // If the browser does not support CSS filters filters, we are applying grayscale.js function
-                // This part of Grayscale images applies to those browsers that do not support CSS filters
-                if (!Modernizr.cssfilters) {
-                    var $images = item; //$(".grayscale img"), 
-                    var imageCount = $images.length, counter = 0;
+                                );
 
-                };
-            }            
-        }
-     },
-        mounted:function (){
-            var vm = this;
+                                
+                            }
 
-            var el =  $(this)[0].$el;
+                            // Custom grayscale function for IE10 and IE11
+                            function grayscaleIe(src) {
+                                var canvas = document.createElement('canvas');
+                                var ctx = canvas.getContext('2d');
+                                var imgObj = new Image();
+                                imgObj.src = src;
+                                canvas.width = imgObj.width;
+                                canvas.height = imgObj.height;
+                                ctx.drawImage(imgObj, 0, 0);
+                                var imgPixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                                for (var y = 0; y < imgPixels.height; y++) {
+                                    for (var x = 0; x < imgPixels.width; x++) {
+                                        var i = (y * 4) * imgPixels.width + x * 4;
+                                        var avg = (imgPixels.data[i] + imgPixels.data[i + 1] + imgPixels.data[
+                                            i + 2]) / 3;
+                                        imgPixels.data[i] = avg;
+                                        imgPixels.data[i + 1] = avg;
+                                        imgPixels.data[i + 2] = avg;
+                                    }
+                                }
+                                ctx.putImageData(imgPixels, 0, 0, 0, 0, imgPixels.width, imgPixels.height);
+                                return canvas.toDataURL();
+                            };
+                        };
 
-            function loaded() {
-                vm.grayDecorate(el);
+                        // If the browser does not support CSS filters filters, we are applying grayscale.js function
+                        // This part of Grayscale images applies to those browsers that do not support CSS filters
+                        if (!Modernizr.cssfilters) {
+                            var $images = item; //$(".grayscale img"), 
+                            var imageCount = $images.length,
+                                counter = 0;
+
+                        };
+                    }
+                }
+            },
+            mounted: function () {
+                var vm = this;
+
+                var el = $(this)[0].$el;
+
+                debugger;
+
+                function loaded() {
+                    vm.grayDecorate(el);
+                }
+
+                if (el.complete) {
+                    loaded()
+                } else {
+                    el.addEventListener('load', loaded)
+                }
+
             }
 
-            if (el.complete) {
-                
-                loaded()
-            } else {
-                el.addEventListener('load', loaded)
+        });
+
+        new Vue({
+            el: '#app',
+            data: {
+                imgURL: "./logo.png",
+                imgURL2: "",
+                greeting: 'Welcome to your Vue.js app!',
+                docsURL: 'http://vuejs.org/guide/',
+                gitterURL: 'https://gitter.im/vuejs/vue',
+                forumURL: 'http://forum.vuejs.org/'
+            },
+            methods: {
+                humanizeURL: function (url) {
+                    return url
+                        .replace(/^https?:\/\//, '')
+                        .replace(/\/$/, '')
+                }
+
+            },
+            mounted: function () {
+                var vm = this;
+                // setTimeout(function () {
+                //     vm.imgURL2 = './mobility1.png';
+                // }, 2000);
             }
-    },
-  
-    });
-
-    new Vue({
-      el: '#app',
-      data: {
-        imgURL:"./logo.png",  
-        imgURL2:"",  
-        greeting: 'Welcome to your Vue.js app!',
-        docsURL: 'http://vuejs.org/guide/',
-        gitterURL: 'https://gitter.im/vuejs/vue',
-        forumURL: 'http://forum.vuejs.org/'
-      },
-      methods: {
-        humanizeURL: function (url) {
-          return url
-            .replace(/^https?:\/\//, '')
-            .replace(/\/$/, '')
-        }
-  
-      },
-        mounted:function(){
-            var vm = this;      
-                setTimeout(function() {
-                    vm.imgURL2 = './mobility1.png';
-                }, 2000);
-            }            
-    })        
-
-  </script>
+        })
+    </script>
 </body>
+
 </html>
